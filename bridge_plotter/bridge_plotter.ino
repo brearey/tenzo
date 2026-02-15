@@ -3,6 +3,10 @@
 // ---------------------- Hardware ----------------------
 #define DT_PIN A0
 #define SCK_PIN A1
+#define R 2
+#define G 3
+#define B 4
+#define VCC 13
 
 HX711 scale;
 
@@ -142,6 +146,46 @@ void setup() {
   partialLevel = baseline;
 
   state = ST_NORMAL;
+  
+  // RGB LED
+  pinMode(R, OUTPUT);
+  pinMode(G, OUTPUT);
+  pinMode(B, OUTPUT);
+  pinMode(VCC, OUTPUT);
+
+  digitalWrite(R, HIGH);
+  digitalWrite(R, HIGH);
+  digitalWrite(G, HIGH);
+  digitalWrite(VCC, HIGH);
+}
+
+void lightEvent(uint8_t code) {
+  switch (code)
+  {
+  case EVENT_FULL:
+    // RED LED
+    digitalWrite(R, LOW);
+    digitalWrite(G, HIGH);
+    digitalWrite(B, HIGH);
+    break;
+  
+  case EVENT_PARTIAL:
+    // BLUE LED
+    digitalWrite(R, HIGH);
+    digitalWrite(G, HIGH);
+    digitalWrite(B, LOW);
+    break;
+  
+  case EVENT_NONE:
+    // GREEN LED
+    digitalWrite(R, HIGH);
+    digitalWrite(G, LOW);
+    digitalWrite(B, HIGH);
+    break;
+  
+  default:
+    break;
+  }
 }
 
 void loop() {
@@ -258,5 +302,7 @@ void loop() {
     Serial.print(eventCode);
     Serial.print("\tstate:");
     Serial.println((int)state);
+
+    lightEvent(eventCode);
   }
 }
