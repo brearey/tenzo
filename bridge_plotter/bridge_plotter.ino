@@ -120,6 +120,38 @@ void triggerEvent(uint8_t code, float absSignal) {
   Serial.println((long)absSignal);
 }
 
+void lightEvent(uint8_t code) {
+  switch (code)
+  {
+  case EVENT_FULL:
+    // RED LED
+    digitalWrite(R, LOW);
+    digitalWrite(G, HIGH);
+    digitalWrite(B, HIGH);
+    digitalWrite(VCC, HIGH);
+    break;
+  
+  case EVENT_PARTIAL:
+    // BLUE LED
+    digitalWrite(R, HIGH);
+    digitalWrite(G, HIGH);
+    digitalWrite(B, LOW);
+    digitalWrite(VCC, HIGH);
+    break;
+  
+  case EVENT_NONE:
+    // GREEN LED
+    digitalWrite(R, HIGH);
+    digitalWrite(G, LOW);
+    digitalWrite(B, HIGH);
+    digitalWrite(VCC, HIGH);
+    break;
+  
+  default:
+    break;
+  }
+}
+
 void setup() {
   Serial.begin(115200);
   scale.begin(DT_PIN, SCK_PIN);
@@ -156,36 +188,6 @@ void setup() {
   digitalWrite(R, HIGH);
   digitalWrite(R, HIGH);
   digitalWrite(G, HIGH);
-  digitalWrite(VCC, HIGH);
-}
-
-void lightEvent(uint8_t code) {
-  switch (code)
-  {
-  case EVENT_FULL:
-    // RED LED
-    digitalWrite(R, LOW);
-    digitalWrite(G, HIGH);
-    digitalWrite(B, HIGH);
-    break;
-  
-  case EVENT_PARTIAL:
-    // BLUE LED
-    digitalWrite(R, HIGH);
-    digitalWrite(G, HIGH);
-    digitalWrite(B, LOW);
-    break;
-  
-  case EVENT_NONE:
-    // GREEN LED
-    digitalWrite(R, HIGH);
-    digitalWrite(G, LOW);
-    digitalWrite(B, HIGH);
-    break;
-  
-  default:
-    break;
-  }
 }
 
 void loop() {
