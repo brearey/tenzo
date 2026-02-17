@@ -58,3 +58,15 @@
 
 1. Документация [https://github.com/bogde/HX711](https://github.com/bogde/HX711)
 2. Introduction to Load Cells [https://www.aandd.jp/products/weighing/loadcell/introduction/introduction_to_load_cells.html](https://www.aandd.jp/products/weighing/loadcell/introduction/introduction_to_load_cells.html)
+
+## Logic
+
+> Буду использовать медианную фильтрацию последних 5 измерений
+
+1. `Калибровка` В течении 10 секунд вычисляем нулевой уровень и сохранить его в диапазон значений
+2. Во время `калибровки` светодиоды мигают синим
+3. В глобальныфх переменных нужно создать статусы:
+  - CALIBRATING    0
+  - NORMAL         1
+  - PARTIAL_BREAK  2
+  - FULL_BREAK     3
