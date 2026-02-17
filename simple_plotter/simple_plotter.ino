@@ -43,24 +43,63 @@ float medianFilter(float x) {
 }
 
 unsigned long atStarted;
+#define DURATION (unsigned long)((millis() - atStarted))
+#define MAX_DURATION 3000
 bool isTimePrinted;
 
+float calibrate() {
+  unsigned long startTime = millis();
+  float sum = 0;
+  float offset = 0;
+  int count = 0;
+  
+  while(millis() - startTime < MAX_DURATION) {
+    sum += scale.get_units(1);
+    count++;
+    delay(10);
+  }
+  
+  if (count > 0) {
+    offset = sum / count;
+  } else {
+    offset = 0;
+  }
+  
+  Serial.println("calibrating end");
+  Serial.print("offset = ");
+  Serial.println(offset);
+  return offset;
+}
+
 void setup() {
+  // init
   Serial.begin(115200);
   scale.begin(DT_PIN, SCK_PIN);
   scale.set_scale();
   scale.tare();
   atStarted = millis();
   isTimePrinted = false;
+
+  // calibrating
+  float offset = calibrate();
+  // delay(100);
+  // scale.set_offset(offset);
+
+  // main loop
+  while(true) {
+    Serial.print("raw:");
+    Serial.print(medianFilter(scale.get_value(1)), 1);
+    Serial.print("\toffsetted:");
+    Serial.println(medianFilter(scale.get_value(1) - offset), 1);
+  }
 }
 
 void loop() {
-  float raw = scale.get_units(1);
-  Serial.print("median:");
-  Serial.println(medianFilter(raw), 10);
-  if (raw > 10000 && !isTimePrinted) {
-    Serial.print("time:");
-    Serial.println((unsigned long)((millis() - atStarted) / 1000UL));
-    isTimePrinted = true;
-  }
+  // Serial.print("median:");
+  // Serial.println(medianFilter(raw), 10);
+  // if (raw > 10000 && !isTimePrinted) {
+  //   Serial.print("time:");
+  //   Serial.println((unsigned long)((millis() - atStarted) / 1000UL));
+  //   isTimePrinted = true;
+  // }
 }
