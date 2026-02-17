@@ -42,15 +42,25 @@ float medianFilter(float x) {
   return tmp[n / 2];
 }
 
+unsigned long atStarted;
+bool isTimePrinted;
+
 void setup() {
   Serial.begin(115200);
   scale.begin(DT_PIN, SCK_PIN);
   scale.set_scale();
   scale.tare();
+  atStarted = millis();
+  isTimePrinted = false;
 }
 
 void loop() {
   float raw = scale.get_units(1);
   Serial.print("median:");
   Serial.println(medianFilter(raw), 10);
+  if (raw > 10000 && !isTimePrinted) {
+    Serial.print("time:");
+    Serial.println((unsigned long)((millis() - atStarted) / 1000UL));
+    isTimePrinted = true;
+  }
 }
