@@ -8,6 +8,7 @@
 #define LED_R 2
 #define LED_G 3
 #define LED_B 4
+#define LED_VCC 13
 
 // ОПТИМИЗАЦИЯ ПАМЯТИ: Уменьшаем размеры буферов
 #define WINDOW_SIZE 20        // Было 50, теперь 20 (экономия ~60 байт)
@@ -59,11 +60,13 @@ int longTermCount = 0;
 void setup() {
   Serial.begin(9600);
   
-  // Настройка пинов
+  // Настройка LED
   pinMode(LED_R, OUTPUT);
   pinMode(LED_G, OUTPUT);
   pinMode(LED_B, OUTPUT);
-  setLEDColor(0, 0, 0);
+  pinMode(LED_VCC, OUTPUT);
+  setRGB(true, true, true); // disable all RGB
+  digitalWrite(LED_VCC, HIGH);
   
   // Инициализация HX711
   scale.begin(HX711_DT, HX711_SCK);
@@ -74,7 +77,7 @@ void setup() {
   
   // ОПТИМИЗАЦИЯ: Используем F() для строк - они хранятся во Flash, не в SRAM
   Serial.println(F("Калибровка: анализ натяжения..."));
-  setLEDColor(255, 255, 0); // Желтый - калибровка
+  setRGB(false, false, true); //yellow
   
   // Сбор данных для калибровки
   for (int i = 0; i < CALIBRATION_SAMPLES; i++) {
@@ -95,9 +98,9 @@ void setup() {
   }
   
   Serial.println(F("Система готова"));
-  setLEDColor(0, 255, 0); // Зеленый на 500мс
+  setRGB(true, false, true); //green
   delay(500);
-  setLEDColor(0, 0, 0);
+  setRGB(true, true, true); //disable
 }
 
 void loop() {
@@ -319,11 +322,13 @@ void printData(float value) {
 
 /**
  * Управление светодиодом
+ * true disable
+ * false enable
  */
-void setLEDColor(byte r, byte g, byte b) {
-  analogWrite(LED_R, r);
-  analogWrite(LED_G, g);
-  analogWrite(LED_B, b);
+void setRGB(bool signalR, bool signalG, bool signalB) {
+  digitalWrite(LED_R, signalR);
+  digitalWrite(LED_G, signalG);
+  digitalWrite(LED_B, signalB);
 }
 
 /**
@@ -334,7 +339,7 @@ void updateLEDs() {
   static byte blinkState = 0;
   
   if (!calibrated) {
-    setLEDColor(255, 255, 0);
+    setRGB(false, false, true); //R + G
     return;
   }
   
@@ -345,11 +350,11 @@ void updateLEDs() {
     if (now - lastBlink > 250) {
       lastBlink = now;
       blinkState = !blinkState;
-      setLEDColor(blinkState ? 255 : 0, 0, 0);
+      setRGB(blinkState ? false : true, true, true); //R
     }
     if (now - alarmStartTime > ALARM_RESET_TIME) {
       alarmState = 0;
-      setLEDColor(0, 0, 0);
+      setRGB(true, true, true); //disable
     }
   } 
   else if (alarmState == 2) {
@@ -357,18 +362,18 @@ void updateLEDs() {
     if (now - lastBlink > 300) {
       lastBlink = now;
       blinkState = !blinkState;
-      setLEDColor(blinkState ? 255 : 0, blinkState ? 255 : 0, 0);
+      setRGB(blinkState ? false : true, blinkState ? false : true, true); //R or G
     }
     if (now - alarmStartTime > ALARM_RESET_TIME) {
       alarmState = 0;
-      setLEDColor(0, 0, 0);
+      setRGB(true, true, true); //disable
     }
   } else {
     // Индикатор работы (короткая вспышка зеленым)
     if (now % 5000 < 50) {
-      setLEDColor(0, 50, 0); // Уменьшил яркость для экономии?
+      setRGB(true, false, true); //G
     } else {
-      setLEDColor(0, 0, 0);
+      setRGB(true, true, true); //disable
     }
   }
 }
