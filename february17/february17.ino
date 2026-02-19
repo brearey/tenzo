@@ -12,16 +12,17 @@ const uint8_t LED_B = 4;
 const uint8_t LED_VCC = 13;
 
 // Task thresholds
-const float FULL_BREAK_THRESHOLD = 9.0f;       // >9% drop
-const float PARTIAL_BREAK_MIN = 4.0f;          // 4..8% drop
-const float PARTIAL_BREAK_MAX = 8.0f;
+const float FULL_BREAK_THRESHOLD = 8.5f;       // >8.5% drop
+const float PARTIAL_BREAK_MIN = 3.0f;          // 3.0..7.5% drop
+const float PARTIAL_BREAK_MAX = 7.5f;
 
 // Timing
 const unsigned long CALIBRATION_MS = 10000UL;
 const unsigned long SAMPLE_PERIOD_MS = 30UL;
 const unsigned long FULL_CONFIRM_MS = 500UL;
-const unsigned long PARTIAL_CONFIRM_MS = 1200UL;
-const unsigned long ALARM_HOLD_MS = 5000UL;
+const unsigned long PARTIAL_CONFIRM_MS = 300UL;
+// Alarms are latched until reset (power-cycle or manual reset logic)
+// const unsigned long ALARM_HOLD_MS = 5000UL;
 
 // Filtering/adaptation
 const float FILTER_ALPHA = 0.12f;              // simple low-pass
@@ -203,11 +204,6 @@ void updateLED() {
       blinkOn = !blinkOn;
     }
     setRGB(blinkOn ? false : true, true, true); // red blink
-    if (now - alarmStartMs > ALARM_HOLD_MS) {
-      setState(NORMAL);
-      candidateState = NORMAL;
-      candidateStartMs = 0;
-    }
     return;
   }
 
@@ -217,11 +213,6 @@ void updateLED() {
       blinkOn = !blinkOn;
     }
     setRGB(blinkOn ? false : true, blinkOn ? false : true, true); // yellow blink
-    if (now - alarmStartMs > ALARM_HOLD_MS) {
-      setState(NORMAL);
-      candidateState = NORMAL;
-      candidateStartMs = 0;
-    }
     return;
   }
 
