@@ -1,379 +1,296 @@
 #include <HX711.h>
+#include <math.h>
 
-// Пины подключения HX711
-#define HX711_DT A0
-#define HX711_SCK A1
+// HX711 pins
+const uint8_t HX711_DT = A0;
+const uint8_t HX711_SCK = A1;
 
-// Пины светодиодов
-#define LED_R 2
-#define LED_G 3
-#define LED_B 4
-#define LED_VCC 13
+// RGB strip pins (common anode: HIGH = off, LOW = on)
+const uint8_t LED_R = 2;
+const uint8_t LED_G = 3;
+const uint8_t LED_B = 4;
+const uint8_t LED_VCC = 13;
 
-// ОПТИМИЗАЦИЯ ПАМЯТИ: Уменьшаем размеры буферов
-#define WINDOW_SIZE 20        // Было 50, теперь 20 (экономия ~60 байт)
-#define HISTORY_SIZE 15       // Было 30, теперь 15 (экономия ~60 байт)
-#define CALIBRATION_SAMPLES 100 // Было 200, теперь 100 (экономия 400 байт!)
-
-// Параметры системы (используем константы вместо #define для экономии?)
-const float BREAK_THRESHOLD = 50.0f;
-const float PARTIAL_BREAK_MIN = 20.0f;
+// Task thresholds
+const float FULL_BREAK_THRESHOLD = 50.0f;      // >50% drop
+const float PARTIAL_BREAK_MIN = 20.0f;         // 20..40% drop
 const float PARTIAL_BREAK_MAX = 40.0f;
-const float STABILIZATION_TIME = 3000.0f;
-const float ALARM_RESET_TIME = 5000.0f;
-const float DRIFT_TRACKING_RATE = 0.001f;
 
-// ОПТИМИЗАЦИЯ: Убрана структура Event и вся работа с EEPROM
+// Timing
+const unsigned long CALIBRATION_MS = 10000UL;
+const unsigned long SAMPLE_PERIOD_MS = 30UL;
+const unsigned long FULL_CONFIRM_MS = 500UL;
+const unsigned long PARTIAL_CONFIRM_MS = 1200UL;
+const unsigned long ALARM_HOLD_MS = 5000UL;
 
-// Глобальные переменные (минимизируем количество)
+// Filtering/adaptation
+const float FILTER_ALPHA = 0.12f;              // simple low-pass
+const float BASELINE_ADAPT_ALPHA = 0.002f;     // slow drift tracking
+
+// States
+enum State : uint8_t {
+  CALIBRATING = 0,
+  NORMAL = 1,
+  PARTIAL_BREAK = 2,
+  FULL_BREAK = 3
+};
+
 HX711 scale;
+
+State state = CALIBRATING;
+State candidateState = NORMAL;
+
 float baseline = 0.0f;
-float filteredValue = 0.0f;
+float filtered = 0.0f;
+float noiseBandPercent = 2.0f;
 
-// ОПТИМИЗАЦИЯ: Используем статические массивы фиксированного размера
-float window[WINDOW_SIZE];
-int windowIndex = 0;
+unsigned long calibStartMs = 0;
+unsigned long lastSampleMs = 0;
+unsigned long candidateStartMs = 0;
+unsigned long alarmStartMs = 0;
 
-float history[HISTORY_SIZE];
-int historyIndex = 0;
+// Calibration accumulators
+float calibSum = 0.0f;
+float calibAbsDiffSum = 0.0f;
+uint16_t calibCount = 0;
+float calibMeanEstimate = 0.0f;
 
-float noiseLevel = 0.0f;
-float dynamicNoiseFloor = 0.0f;
-
-// Переменные состояния (объединяем в байты где возможно)
-byte alarmState = 0;          // 0-нет, 1-обрыв, 2-частичный (экономия 3 байта вместо int)
-byte calibrated = 0;          // 0/1 флаг калибровки
-
-// Переменные времени (используем unsigned long)
-unsigned long lastEventTime = 0;
-unsigned long alarmStartTime = 0;
-unsigned long dropTime = 0;
-
-// Калибровочный буфер (динамически не выделяется, но большой)
-float calibrationBuffer[CALIBRATION_SAMPLES];
-
-// Переменные для детекции
-float dropDetected = 0.0f;
-float longTermAvg = 0.0f;
-int longTermCount = 0;
-
-void setup() {
-  Serial.begin(9600);
-  
-  // Настройка LED
-  pinMode(LED_R, OUTPUT);
-  pinMode(LED_G, OUTPUT);
-  pinMode(LED_B, OUTPUT);
-  pinMode(LED_VCC, OUTPUT);
-  setRGB(true, true, true); // disable all RGB
-  digitalWrite(LED_VCC, HIGH);
-  
-  // Инициализация HX711
-  scale.begin(HX711_DT, HX711_SCK);
-  scale.set_gain(128);
-  
-  // Короткая задержка для стабилизации
-  delay(500);
-  
-  // ОПТИМИЗАЦИЯ: Используем F() для строк - они хранятся во Flash, не в SRAM
-  Serial.println(F("Калибровка: анализ натяжения..."));
-  setRGB(false, false, true); //yellow
-  
-  // Сбор данных для калибровки
-  for (int i = 0; i < CALIBRATION_SAMPLES; i++) {
-    if (scale.wait_ready_timeout(100)) {
-      calibrationBuffer[i] = (float)scale.read();
-      delay(15);
-    }
-  }
-  
-  performAutoCalibration();
-  
-  // Инициализация буферов
-  for (int i = 0; i < WINDOW_SIZE; i++) {
-    window[i] = baseline;
-  }
-  for (int i = 0; i < HISTORY_SIZE; i++) {
-    history[i] = baseline;
-  }
-  
-  Serial.println(F("Система готова"));
-  setRGB(true, false, true); //green
-  delay(500);
-  setRGB(true, true, true); //disable
+void setRGB(bool rOff, bool gOff, bool bOff) {
+  digitalWrite(LED_R, rOff ? HIGH : LOW);
+  digitalWrite(LED_G, gOff ? HIGH : LOW);
+  digitalWrite(LED_B, bOff ? HIGH : LOW);
 }
 
-void loop() {
-  if (scale.wait_ready_timeout(100)) {
-    long reading = scale.read();
-    float currentValue = (float)reading;
-    
-    // Медианная фильтрация
-    currentValue = medianFilter(currentValue);
-    
-    // Скользящее среднее
-    window[windowIndex] = currentValue;
-    windowIndex = (windowIndex + 1) % WINDOW_SIZE;
-    
-    float sum = 0;
-    for (int i = 0; i < WINDOW_SIZE; i++) {
-      sum += window[i];
-    }
-    filteredValue = sum / WINDOW_SIZE;
-    
-    // Обновление истории
-    history[historyIndex] = filteredValue;
-    historyIndex = (historyIndex + 1) % HISTORY_SIZE;
-    
-    if (calibrated) {
-      trackLongTermDrift(filteredValue);
-      detectEvents(filteredValue);
-      printData(filteredValue);
-    }
-    
-    updateLEDs();
-    delay(30); // Частота ~30 Гц
+void setState(State newState) {
+  state = newState;
+  if (newState == PARTIAL_BREAK || newState == FULL_BREAK) {
+    alarmStartMs = millis();
   }
 }
 
-/**
- * Автокалибровка с отбрасыванием выбросов
- */
-void performAutoCalibration() {
-  // Простая сортировка пузырьком (неэффективно, но не критично для калибровки)
-  for (int i = 0; i < CALIBRATION_SAMPLES - 1; i++) {
-    for (int j = i + 1; j < CALIBRATION_SAMPLES; j++) {
-      if (calibrationBuffer[i] > calibrationBuffer[j]) {
-        float temp = calibrationBuffer[i];
-        calibrationBuffer[i] = calibrationBuffer[j];
-        calibrationBuffer[j] = temp;
-      }
+void startCalibration() {
+  setState(CALIBRATING);
+  calibStartMs = millis();
+  calibSum = 0.0f;
+  calibAbsDiffSum = 0.0f;
+  calibCount = 0;
+  calibMeanEstimate = 0.0f;
+
+  Serial.println(F("CAL: start 10s baseline capture"));
+}
+
+void finishCalibration() {
+  if (calibCount == 0) {
+    // Fallback if sensor was not ready
+    baseline = 1.0f;
+    filtered = 1.0f;
+    noiseBandPercent = 5.0f;
+  } else {
+    baseline = calibSum / (float)calibCount;
+    filtered = baseline;
+
+    float meanAbsDiff = calibAbsDiffSum / (float)calibCount;
+    noiseBandPercent = (baseline != 0.0f) ? fabsf(meanAbsDiff / baseline) * 100.0f * 3.0f : 5.0f;
+    if (noiseBandPercent < 2.0f) {
+      noiseBandPercent = 2.0f;
+    }
+    if (noiseBandPercent > 10.0f) {
+      noiseBandPercent = 10.0f;
     }
   }
-  
-  // Используем процентили для отбрасывания выбросов
-  int startIdx = (int)(CALIBRATION_SAMPLES * 0.2);
-  int endIdx = (int)(CALIBRATION_SAMPLES * 0.8);
-  
-  float sum = 0;
-  for (int i = startIdx; i < endIdx; i++) {
-    sum += calibrationBuffer[i];
-  }
-  
-  baseline = sum / (endIdx - startIdx);
-  
-  // Расчет стандартного отклонения
-  float variance = 0;
-  for (int i = startIdx; i < endIdx; i++) {
-    float diff = calibrationBuffer[i] - baseline;
-    variance += diff * diff;
-  }
-  float stdDev = sqrt(variance / (endIdx - startIdx));
-  
-  // Нормировка
-  noiseLevel = (baseline > 0) ? (stdDev / baseline) * 100.0f : 1.0f;
-  dynamicNoiseFloor = noiseLevel * 2.5f;
-  
-  calibrated = 1;
-  
-  Serial.print(F("Базовое натяжение: "));
-  Serial.println(baseline);
-  Serial.print(F("Уровень шума: "));
-  Serial.print(noiseLevel);
+
+  candidateState = NORMAL;
+  candidateStartMs = 0;
+  setState(NORMAL);
+
+  Serial.print(F("CAL: baseline="));
+  Serial.print(baseline);
+  Serial.print(F(", noiseBand="));
+  Serial.print(noiseBandPercent);
   Serial.println(F("%"));
 }
 
-/**
- * Медианный фильтр 5-го порядка
- */
-float medianFilter(float newValue) {
-  static float buffer[5] = {0};
-  static int index = 0;
-  float sorted[5];
-  
-  buffer[index] = newValue;
-  index = (index + 1) % 5;
-  
-  // Копируем
-  for (int i = 0; i < 5; i++) {
-    sorted[i] = buffer[i];
-  }
-  
-  // Сортировка вставками
-  for (int i = 1; i < 5; i++) {
-    float key = sorted[i];
-    int j = i - 1;
-    while (j >= 0 && sorted[j] > key) {
-      sorted[j + 1] = sorted[j];
-      j--;
-    }
-    sorted[j + 1] = key;
-  }
-  
-  return sorted[2];
-}
+void updateCalibration(float raw) {
+  calibCount++;
+  calibSum += raw;
 
-/**
- * Отслеживание долговременного дрейфа
- */
-void trackLongTermDrift(float value) {
-  if (longTermCount < 500) {
-    longTermAvg = (longTermAvg * longTermCount + value) / (longTermCount + 1);
-    longTermCount++;
+  // Running estimate for simple mean absolute deviation
+  if (calibCount == 1) {
+    calibMeanEstimate = raw;
   } else {
-    longTermAvg = longTermAvg * (1 - DRIFT_TRACKING_RATE) + value * DRIFT_TRACKING_RATE;
+    calibMeanEstimate += (raw - calibMeanEstimate) / (float)calibCount;
   }
-  
-  float driftPercent = ((longTermAvg - baseline) / baseline) * 100.0f;
-  
-  if (abs(driftPercent) > noiseLevel && abs(driftPercent) < PARTIAL_BREAK_MIN) {
-    // Медленная коррекция baseline
-    baseline = baseline * 0.999f + longTermAvg * 0.001f;
+  calibAbsDiffSum += fabsf(raw - calibMeanEstimate);
+
+  if (millis() - calibStartMs >= CALIBRATION_MS) {
+    finishCalibration();
   }
 }
 
-/**
- * Детекция событий
- */
-void detectEvents(float currentValue) {
-  static float dropDetected = 0.0f;
-  static unsigned long dropTime = 0;
-  
-  float historyAvg = 0;
-  for (int i = 0; i < HISTORY_SIZE; i++) {
-    historyAvg += history[i];
-  }
-  historyAvg /= HISTORY_SIZE;
-  
-  // Поиск резкого падения
-  if (historyAvg > baseline * 0.7f) {
-    float instantDrop = ((historyAvg - currentValue) / historyAvg) * 100.0f;
-    
-    if (instantDrop > dynamicNoiseFloor && instantDrop > 5.0f) {
-      dropDetected = instantDrop;
-      dropTime = millis();
-    }
-  }
-  
-  // Анализ после стабилизации
-  if (dropDetected > 0 && (millis() - dropTime) >= STABILIZATION_TIME) {
-    // Стабильное значение после падения
-    float stableSum = 0;
-    for (int i = 0; i < HISTORY_SIZE/2; i++) {
-      int idx = (historyIndex - 1 - i + HISTORY_SIZE) % HISTORY_SIZE;
-      stableSum += history[idx];
-    }
-    float newStable = stableSum / (HISTORY_SIZE/2);
-    
-    float totalDrop = ((baseline - newStable) / baseline) * 100.0f;
-    
-    if (totalDrop > BREAK_THRESHOLD) {
-      triggerAlarm(1, totalDrop);
-      baseline = newStable; // Обновляем baseline
-    }
-    else if (totalDrop >= PARTIAL_BREAK_MIN && totalDrop <= PARTIAL_BREAK_MAX) {
-      triggerAlarm(2, totalDrop);
-      baseline = newStable; // Обновляем baseline
-    }
-    
-    dropDetected = 0;
-  }
-}
-
-/**
- * Активация тревоги
- */
-void triggerAlarm(byte type, float dropPercent) {
-  if (millis() - lastEventTime < ALARM_RESET_TIME) {
-    return;
-  }
-  
-  alarmState = type;
-  alarmStartTime = millis();
-  lastEventTime = millis();
-  
-  Serial.print(F("ТРЕВОГА "));
-  if (type == 1) {
-    Serial.print(F("ОБРЫВ"));
+void emitAlarm(State alarmType, float dropPercent) {
+  if (alarmType == FULL_BREAK) {
+    Serial.print(F("ALARM FULL_BREAK drop="));
   } else {
-    Serial.print(F("ЧАСТИЧНЫЙ"));
+    Serial.print(F("ALARM PARTIAL_BREAK drop="));
   }
-  Serial.print(F(": падение "));
   Serial.print(dropPercent);
   Serial.println(F("%"));
 }
 
-/**
- * Вывод в Serial Plotter
- */
-void printData(float value) {
-  float percent = ((value - baseline) / baseline) * 100.0f;
-  
-  Serial.print("S:");
-  Serial.print(percent);
-  Serial.print(",N:");
-  Serial.print(-dynamicNoiseFloor);
-  Serial.print(",B:");
-  Serial.print(-BREAK_THRESHOLD);
-  Serial.print(",P:");
-  Serial.print(-PARTIAL_BREAK_MIN);
-  Serial.println();
-}
-
-/**
- * Управление светодиодом
- * true disable
- * false enable
- */
-void setRGB(bool signalR, bool signalG, bool signalB) {
-  digitalWrite(LED_R, signalR);
-  digitalWrite(LED_G, signalG);
-  digitalWrite(LED_B, signalB);
-}
-
-/**
- * Обновление индикации
- */
-void updateLEDs() {
-  static unsigned long lastBlink = 0;
-  static byte blinkState = 0;
-  
-  if (!calibrated) {
-    setRGB(false, false, true); //R + G
+void detectBreak(float value) {
+  if (baseline == 0.0f) {
     return;
   }
-  
-  unsigned long now = millis();
-  
-  if (alarmState == 1) {
-    // Красный мигающий
-    if (now - lastBlink > 250) {
-      lastBlink = now;
-      blinkState = !blinkState;
-      setRGB(blinkState ? false : true, true, true); //R
+
+  float dropPercent = ((baseline - value) / baseline) * 100.0f;
+
+  State target = NORMAL;
+  if (dropPercent >= FULL_BREAK_THRESHOLD) {
+    target = FULL_BREAK;
+  } else if (dropPercent >= PARTIAL_BREAK_MIN && dropPercent <= PARTIAL_BREAK_MAX) {
+    target = PARTIAL_BREAK;
+  }
+
+  if (target == NORMAL) {
+    candidateState = NORMAL;
+    candidateStartMs = 0;
+
+    // Slow baseline drift compensation only in normal area
+    if (fabsf(dropPercent) <= noiseBandPercent) {
+      baseline = baseline * (1.0f - BASELINE_ADAPT_ALPHA) + value * BASELINE_ADAPT_ALPHA;
     }
-    if (now - alarmStartTime > ALARM_RESET_TIME) {
-      alarmState = 0;
-      setRGB(true, true, true); //disable
-    }
-  } 
-  else if (alarmState == 2) {
-    // Желтый мигающий
-    if (now - lastBlink > 300) {
-      lastBlink = now;
-      blinkState = !blinkState;
-      setRGB(blinkState ? false : true, blinkState ? false : true, true); //R or G
-    }
-    if (now - alarmStartTime > ALARM_RESET_TIME) {
-      alarmState = 0;
-      setRGB(true, true, true); //disable
-    }
-  } else {
-    // Индикатор работы (короткая вспышка зеленым)
-    if (now % 5000 < 50) {
-      setRGB(true, false, true); //G
-    } else {
-      setRGB(true, true, true); //disable
+    return;
+  }
+
+  if (candidateState != target) {
+    candidateState = target;
+    candidateStartMs = millis();
+    return;
+  }
+
+  if (candidateStartMs == 0) {
+    candidateStartMs = millis();
+    return;
+  }
+
+  unsigned long needed = (target == FULL_BREAK) ? FULL_CONFIRM_MS : PARTIAL_CONFIRM_MS;
+  if (millis() - candidateStartMs >= needed) {
+    if (state != target) {
+      emitAlarm(target, dropPercent);
+      setState(target);
     }
   }
+}
+
+void updateLED() {
+  static unsigned long blinkTick = 0;
+  static bool blinkOn = false;
+  unsigned long now = millis();
+
+  if (state == CALIBRATING) {
+    if (now - blinkTick > 250UL) {
+      blinkTick = now;
+      blinkOn = !blinkOn;
+    }
+    // Blue blink while calibration
+    setRGB(true, true, blinkOn ? false : true);
+    return;
+  }
+
+  if (state == FULL_BREAK) {
+    if (now - blinkTick > 180UL) {
+      blinkTick = now;
+      blinkOn = !blinkOn;
+    }
+    setRGB(blinkOn ? false : true, true, true); // red blink
+    if (now - alarmStartMs > ALARM_HOLD_MS) {
+      setState(NORMAL);
+      candidateState = NORMAL;
+      candidateStartMs = 0;
+    }
+    return;
+  }
+
+  if (state == PARTIAL_BREAK) {
+    if (now - blinkTick > 250UL) {
+      blinkTick = now;
+      blinkOn = !blinkOn;
+    }
+    setRGB(blinkOn ? false : true, blinkOn ? false : true, true); // yellow blink
+    if (now - alarmStartMs > ALARM_HOLD_MS) {
+      setState(NORMAL);
+      candidateState = NORMAL;
+      candidateStartMs = 0;
+    }
+    return;
+  }
+
+  // NORMAL: solid green
+  setRGB(true, false, true);
+}
+
+void printPlot(float value) {
+  if (baseline == 0.0f) {
+    return;
+  }
+
+  float dropPercent = ((baseline - value) / baseline) * 100.0f;
+
+  // Serial Plotter friendly format
+  Serial.print(F("drop:"));
+  Serial.print(dropPercent);
+  Serial.print(F(",full:"));
+  Serial.print(FULL_BREAK_THRESHOLD);
+  Serial.print(F(",partialMin:"));
+  Serial.print(PARTIAL_BREAK_MIN);
+  Serial.print(F(",partialMax:"));
+  Serial.println(PARTIAL_BREAK_MAX);
+}
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(LED_R, OUTPUT);
+  pinMode(LED_G, OUTPUT);
+  pinMode(LED_B, OUTPUT);
+  pinMode(LED_VCC, OUTPUT);
+  digitalWrite(LED_VCC, HIGH);
+  setRGB(true, true, true);
+
+  scale.begin(HX711_DT, HX711_SCK);
+  scale.set_gain(128);
+
+  delay(300);
+  startCalibration();
+}
+
+void loop() {
+  updateLED();
+
+  unsigned long now = millis();
+  if (now - lastSampleMs < SAMPLE_PERIOD_MS) {
+    return;
+  }
+  lastSampleMs = now;
+
+  if (!scale.wait_ready_timeout(60)) {
+    return;
+  }
+
+  float raw = (float)scale.read();
+
+  // Initialize filter from first sample
+  if (filtered == 0.0f) {
+    filtered = raw;
+  } else {
+    filtered = filtered * (1.0f - FILTER_ALPHA) + raw * FILTER_ALPHA;
+  }
+
+  if (state == CALIBRATING) {
+    updateCalibration(filtered);
+    return;
+  }
+
+  detectBreak(filtered);
+  printPlot(filtered);
 }
