@@ -12,8 +12,8 @@ const uint8_t LED_B = 4;
 const uint8_t LED_VCC = 13;
 
 // Пороговые значения
-const float FULL_BREAK_THRESHOLD = 8.5f;       // >8.5% падение
-const float PARTIAL_BREAK_MIN = 3.0f;          // 3.0..7.5% падение
+const float FULL_BREAK_THRESHOLD = 8.5f;
+const float PARTIAL_BREAK_MIN = 3.0f;
 const float PARTIAL_BREAK_MAX = 7.5f;
 
 // Тайминги
@@ -22,7 +22,7 @@ const unsigned long SAMPLE_PERIOD_MS = 30UL;
 const unsigned long FULL_CONFIRM_MS = 500UL;
 const unsigned long PARTIAL_CONFIRM_MS = 300UL;
 
-// Фильтрация/адаптация
+// Фильтрация
 const float FILTER_ALPHA = 0.12f; // простой НЧ‑фильтр
 const float BASELINE_ADAPT_ALPHA = 0.002f; // медленное отслеживание дрейфа
 
@@ -54,7 +54,7 @@ float calibAbsDiffSum = 0.0f;
 uint16_t calibCount = 0;
 float calibMeanEstimate = 0.0f;
 
-// Управляет цветом RGB-ленты (true = выключить канал)
+// Управляет цветом RGB-ленты (true = выключить)
 void setRGB(bool rOff, bool gOff, bool bOff) {
   digitalWrite(LED_R, rOff ? HIGH : LOW);
   digitalWrite(LED_G, gOff ? HIGH : LOW);
@@ -276,7 +276,7 @@ void loop() {
 
   float raw = (float)scale.read();
 
-  // Initialize filter from first sample
+  // Инициализация фильтра
   if (filtered == 0.0f) {
     filtered = raw;
   } else {
