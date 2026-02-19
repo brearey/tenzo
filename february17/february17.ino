@@ -12,9 +12,9 @@ const uint8_t LED_B = 4;
 const uint8_t LED_VCC = 13;
 
 // Task thresholds
-const float FULL_BREAK_THRESHOLD = 50.0f;      // >50% drop
-const float PARTIAL_BREAK_MIN = 20.0f;         // 20..40% drop
-const float PARTIAL_BREAK_MAX = 40.0f;
+const float FULL_BREAK_THRESHOLD = 9.0f;       // >9% drop
+const float PARTIAL_BREAK_MIN = 4.0f;          // 4..8% drop
+const float PARTIAL_BREAK_MAX = 8.0f;
 
 // Timing
 const unsigned long CALIBRATION_MS = 10000UL;
