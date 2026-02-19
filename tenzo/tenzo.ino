@@ -28,10 +28,10 @@ const float BASELINE_ADAPT_ALPHA = 0.002f; // медленное отслежи�
 
 // Состояния
 enum State : uint8_t {
-  CALIBRATING = 0,
-  NORMAL = 1,
-  PARTIAL_BREAK = 2,
-  FULL_BREAK = 3
+  CALIBRATING = 0, // мигает синим
+  NORMAL = 1, // горит зеленым
+  PARTIAL_BREAK = 2, // мигает желтым
+  FULL_BREAK = 3 // мигает красным
 };
 
 HX711 scale;
