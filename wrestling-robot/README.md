@@ -8,3 +8,7 @@
 4. Джойстик ардуино KY-023 две оси + кнопка
 
 Based on lesson [https://alexgyver.ru/lessons/bt-jdy-31/](https://alexgyver.ru/lessons/bt-jdy-31/)
+
+`SoftwareSerial mySerial(3, 2); // RX, TX`
+
+> Тут важно что 3 это вместо 0 (RX) в ардуино, 2 это вместо 1 (TX)

@@ -1,10 +1,16 @@
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(3, 2); // RX, TX
+
 void setup() {
   Serial.begin(9600);
-  Serial.setTimeout(100);
+  mySerial.begin(9600);
 }
 
 void loop() {
+  if (mySerial.available()) {
+    Serial.write(mySerial.read());
+  }
   if (Serial.available()) {
-    Serial.write(Serial.read());
+    mySerial.write(Serial.read());
   }
 }
