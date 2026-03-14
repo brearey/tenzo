@@ -2,7 +2,7 @@
 
 ## Bluetooth + ardiuno + android tablet
 
-1. Bluetooth модуль JDY-31 (аналог популярного HC-06)
+1. Bluetooth модуль JDY-31 (аналог популярного HC-06) Mac: 00:18:91:D6:89:89
 2. Arduino UNO R3
 3. Серво Tower pro (micro servo 9g) SG90
 4. Джойстик ардуино KY-023 две оси + кнопка
