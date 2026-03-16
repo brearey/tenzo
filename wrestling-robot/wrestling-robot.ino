@@ -7,6 +7,11 @@ Servo myservo;
 #define SERVO_PIN 5
 #define SERVO_VCC 12
 
+void print(String msg) {
+  mySerial.println(msg);
+  Serial.println(msg);
+}
+
 void servoTest() {
   myservo.write(0); // degrees
   delay(200);
@@ -15,9 +20,10 @@ void servoTest() {
 }
 
 void servoInit() {
+  print("Servo on: " + myservo.read());
   pinMode(SERVO_VCC, OUTPUT);
   digitalWrite(SERVO_VCC, HIGH);
-  myservo.attach(SERVO_PIN);\
+  myservo.attach(SERVO_PIN);
   servoTest();
 }
 
@@ -25,6 +31,7 @@ void setup() {
   Serial.begin(9600);
   mySerial.begin(9600);
   servoInit();
+  Serial.println("Program started");
 }
 
 void loop() {
@@ -34,12 +41,12 @@ void loop() {
 
     switch (cmd) {
       case 'f':
-          Serial.println("Forward");
+          print("Forward");
           myservo.write(0); // degrees
           break;
 
       case 'b':
-          Serial.println("Backward");
+          print("Backward");
           myservo.write(180); // degrees
           break;
     }
