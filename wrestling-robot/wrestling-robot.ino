@@ -20,18 +20,17 @@ void servoTest() {
 }
 
 void servoInit() {
-  print("Servo on: " + myservo.read());
   pinMode(SERVO_VCC, OUTPUT);
   digitalWrite(SERVO_VCC, HIGH);
   myservo.attach(SERVO_PIN);
-  servoTest();
+  // servoTest();
 }
 
 void setup() {
   Serial.begin(9600);
   mySerial.begin(9600);
   servoInit();
-  Serial.println("Program started");
+  print("Program started");
 }
 
 void loop() {
@@ -48,6 +47,10 @@ void loop() {
       case 'b':
           print("Backward");
           myservo.write(180); // degrees
+          break;
+      case 's':
+          print("Servo");
+          print(String(myservo.read()));
           break;
     }
   }

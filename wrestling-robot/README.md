@@ -20,3 +20,5 @@ Based on lesson: [https://alexgyver.ru/lessons/servo/](https://alexgyver.ru/less
 About servo [https://iarduino.ru/shop/Mehanika/privod-postoyannogo-vrascheniya.html](https://iarduino.ru/shop/Mehanika/privod-postoyannogo-vrascheniya.html)
 
 > Сервопривод потребляет довольно приличный ток (стартовый до 1А), поэтому рекомендуется питать его от внешнего источника. При питании от компьютера напряжение может просесть и МК перезагрузится, при высокой нагрузке (с 2 и больше приводов) может выгореть защитный диод на плате Arduino!
+
+При первом подключении без команд серво ставит себе угол 93 градуса. Если питание слабое то ардуино уходит на перезагрузку.
