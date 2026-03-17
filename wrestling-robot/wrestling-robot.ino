@@ -1,15 +1,18 @@
+
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(8, 7); // RX, TX
 
 // servo
-#include <Servo.h>
-Servo myservo1;
-Servo myservo2;
-Servo myservo3;
-Servo myservo4;
-Servo myservo5;
-Servo myservo6;
+#include <VarSpeedServo.h>
+VarSpeedServo myservo1;
+VarSpeedServo myservo2;
+VarSpeedServo myservo3;
+VarSpeedServo myservo4;
+VarSpeedServo myservo5;
+VarSpeedServo myservo6;
 
+#define SPEED 100
+#define IS_WAIT false
 #define SERVO_1 3
 #define SERVO_2 5
 #define SERVO_3 6
@@ -26,9 +29,9 @@ void servoInit() {
   myservo1.attach(SERVO_1);
   myservo2.attach(SERVO_2);
   myservo3.attach(SERVO_3);
-  // myservo4.attach(SERVO_4);
-  // myservo5.attach(SERVO_5);
-  // myservo6.attach(SERVO_6);
+  myservo4.attach(SERVO_4);
+  myservo5.attach(SERVO_5);
+  myservo6.attach(SERVO_6);
   // servoTest();
 }
 
@@ -47,42 +50,42 @@ void loop() {
     switch (cmd) {
       case 'f':
           print("Forward");
-          myservo1.write(0); // degrees
-          myservo2.write(0); // degrees
-          myservo3.write(0); // degrees
-          // myservo4.write(0); // degrees
-          // myservo5.write(0); // degrees
-          // myservo6.write(0); // degrees
+          myservo1.write(0, SPEED, IS_WAIT); // degrees
+          myservo2.write(0, SPEED, IS_WAIT); // degrees
+          myservo3.write(0, SPEED, IS_WAIT); // degrees
+          myservo4.write(0, SPEED, IS_WAIT); // degrees
+          myservo5.write(0, SPEED, IS_WAIT); // degrees
+          myservo6.write(0, SPEED, IS_WAIT); // degrees
           print(String(myservo1.read()));
           print(String(myservo2.read()));
           print(String(myservo3.read()));
-          // print(String(myservo4.read()));
-          // print(String(myservo5.read()));
-          // print(String(myservo6.read()));
+          print(String(myservo4.read()));
+          print(String(myservo5.read()));
+          print(String(myservo6.read()));
           break;
 
       case 'b':
           print("Backward");
-          myservo1.write(180); // degrees
-          myservo2.write(180); // degrees
-          myservo3.write(180); // degrees
-          // myservo4.write(180); // degrees
-          // myservo5.write(180); // degrees
-          // myservo6.write(180); // degrees
+          myservo1.write(180, SPEED, IS_WAIT); // degrees
+          myservo2.write(180, SPEED, IS_WAIT); // degrees
+          myservo3.write(180, SPEED, IS_WAIT); // degrees
+          myservo4.write(180, SPEED, IS_WAIT); // degrees
+          myservo5.write(180, SPEED, IS_WAIT); // degrees
+          myservo6.write(180, SPEED, IS_WAIT); // degrees
           print(String(myservo1.read()));
           print(String(myservo2.read()));
           print(String(myservo3.read()));
-          // print(String(myservo4.read()));
-          // print(String(myservo5.read()));
-          // print(String(myservo6.read()));
+          print(String(myservo4.read()));
+          print(String(myservo5.read()));
+          print(String(myservo6.read()));
           break;
       case 's':
           print(String(myservo1.read()));
           print(String(myservo2.read()));
           print(String(myservo3.read()));
-          // print(String(myservo4.read()));
-          // print(String(myservo5.read()));
-          // print(String(myservo6.read()));
+          print(String(myservo4.read()));
+          print(String(myservo5.read()));
+          print(String(myservo6.read()));
           break;
     }
   }
