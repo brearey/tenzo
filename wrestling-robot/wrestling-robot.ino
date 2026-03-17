@@ -1,5 +1,5 @@
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(3, 2); // RX, TX
+SoftwareSerial mySerial(8, 7); // RX, TX
 
 // servo
 #include <Servo.h>
@@ -17,22 +17,18 @@ Servo myservo6;
 #define SERVO_5 10
 #define SERVO_6 11
 
-#define BLE_VCC 12
-
 void print(String msg) {
   mySerial.println(msg);
   Serial.println(msg);
 }
 
 void servoInit() {
-  pinMode(BLE_VCC, OUTPUT);
-  digitalWrite(BLE_VCC, HIGH);
   myservo1.attach(SERVO_1);
   myservo2.attach(SERVO_2);
   myservo3.attach(SERVO_3);
-  myservo4.attach(SERVO_4);
-  myservo5.attach(SERVO_5);
-  myservo6.attach(SERVO_6);
+  // myservo4.attach(SERVO_4);
+  // myservo5.attach(SERVO_5);
+  // myservo6.attach(SERVO_6);
   // servoTest();
 }
 
@@ -54,15 +50,15 @@ void loop() {
           myservo1.write(0); // degrees
           myservo2.write(0); // degrees
           myservo3.write(0); // degrees
-          myservo4.write(0); // degrees
-          myservo5.write(0); // degrees
-          myservo6.write(0); // degrees
+          // myservo4.write(0); // degrees
+          // myservo5.write(0); // degrees
+          // myservo6.write(0); // degrees
           print(String(myservo1.read()));
           print(String(myservo2.read()));
           print(String(myservo3.read()));
-          print(String(myservo4.read()));
-          print(String(myservo5.read()));
-          print(String(myservo6.read()));
+          // print(String(myservo4.read()));
+          // print(String(myservo5.read()));
+          // print(String(myservo6.read()));
           break;
 
       case 'b':
@@ -70,15 +66,23 @@ void loop() {
           myservo1.write(180); // degrees
           myservo2.write(180); // degrees
           myservo3.write(180); // degrees
-          myservo4.write(180); // degrees
-          myservo5.write(180); // degrees
-          myservo6.write(180); // degrees
+          // myservo4.write(180); // degrees
+          // myservo5.write(180); // degrees
+          // myservo6.write(180); // degrees
           print(String(myservo1.read()));
           print(String(myservo2.read()));
           print(String(myservo3.read()));
-          print(String(myservo4.read()));
-          print(String(myservo5.read()));
-          print(String(myservo6.read()));
+          // print(String(myservo4.read()));
+          // print(String(myservo5.read()));
+          // print(String(myservo6.read()));
+          break;
+      case 's':
+          print(String(myservo1.read()));
+          print(String(myservo2.read()));
+          print(String(myservo3.read()));
+          // print(String(myservo4.read()));
+          // print(String(myservo5.read()));
+          // print(String(myservo6.read()));
           break;
     }
   }
