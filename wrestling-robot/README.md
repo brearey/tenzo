@@ -3,9 +3,10 @@
 ## Bluetooth + ardiuno + android tablet
 
 1. Bluetooth модуль JDY-31 (аналог популярного HC-06) Mac: 00:18:91:D6:89:89
-2. Arduino UNO R3
-3. Серво Tower pro (micro servo 9g - gram) SG90
-4. Джойстик ардуино KY-023 две оси + кнопка
+2. Arduino nano
+3. Серво Tower pro (micro servo 9g - gram) SG90 `Диапазон ширины принимаемого импульса: 500–2500 мкс` [https://iarduino.ru/shop/Mehanika/privod-postoyannogo-vrascheniya.html?ysclid=mmvg5u90p4161720963](https://iarduino.ru/shop/Mehanika/privod-postoyannogo-vrascheniya.html?ysclid=mmvg5u90p4161720963)
+4. Сервопривод Feetech FS90 `Диапазон ширины принимаемого импульса: 544–2400 мкс` [https://wiki.amperka.ru/products:servo-fs90](https://wiki.amperka.ru/products:servo-fs90)
+5. Джойстик ардуино KY-023 две оси + кнопка
 
 Based on lesson [https://alexgyver.ru/lessons/bt-jdy-31/](https://alexgyver.ru/lessons/bt-jdy-31/)
 
@@ -42,3 +43,10 @@ VIN | VCC
 ## Измерения
 
 Сила тока на 6 серво во время одновременной работы достигает максимум 1300 мА. Напряжение в диапазоне 7.54-7.64 вольт
+
+## Servo library with slow motion
+
+> attach(pin, min, max  ) - Attaches to a pin setting min and max values in microseconds
+> default min is 544, max is 2400
+
+[https://github.com/netlabtoolkit/VarSpeedServo](https://github.com/netlabtoolkit/VarSpeedServo)
