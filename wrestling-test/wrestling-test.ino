@@ -9,7 +9,7 @@ VarSpeedServo myservo5;
 VarSpeedServo myservo6;
 
 // Настройки
-#define SPEED 60      // Скорость (1-255, где 0 = макс скорость, 255 = очень медленно)
+#define SPEED 50      // 0=full speed, 1-255 slower to faster
 #define IS_WAIT false // false = асинхронно (не блокирует код), true = ждать окончания движения
 
 // Пины сервоприводов согласно wrestling-robot.ino
@@ -30,6 +30,18 @@ void print(String msg) {
   Serial.println(msg);
 }
 
+void toStart() {
+  // обе ноги на исходную
+  servoTest(myservo2, 85);
+  delay(200);
+  servoTest(myservo1, 86);
+  delay(200);
+  servoTest(myservo5, 100);
+  delay(200);
+  servoTest(myservo6, 100);
+  delay(500);
+}
+
 void servoInit() {
   // Инициализация с индивидуальными диапазонами
   myservo1.attach(SERVO_1, TOWER_MIN, TOWER_MAX);
@@ -45,9 +57,18 @@ void servoTest(VarSpeedServo s, int angle) {
 }
 
 void setup() {
+  print("Program start");
   Serial.begin(9600);
   servoInit();
-  print("Program start");
+  toStart();
+  // правая нога вперед
+  servoTest(myservo2, 110);
+  servoTest(myservo1, 85);
+  // левая нога назад
+  servoTest(myservo5, 110);
+  servoTest(myservo6, 85);
+  delay(500);
+  toStart();
 }
 
 void loop() {
