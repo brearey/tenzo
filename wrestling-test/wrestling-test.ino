@@ -20,6 +20,13 @@ VarSpeedServo myservo6;
 #define SERVO_5 8
 #define SERVO_6 9
 
+#define S1_START 86
+#define S2_START 85
+#define S3_START 93
+#define S4_START 93
+#define S5_START 100
+#define S6_START 100
+
 // Диапазоны импульсов (мкс) согласно вашему предыдущему коду
 #define FEETCH_MIN 544
 #define FEETCH_MAX 2400
@@ -32,13 +39,17 @@ void print(String msg) {
 
 void toStart() {
   // обе ноги на исходную
-  servoTest(myservo2, 85);
-  delay(200);
-  servoTest(myservo1, 86);
-  delay(200);
-  servoTest(myservo5, 100);
-  delay(200);
-  servoTest(myservo6, 100);
+  servoTest(myservo1, S1_START);
+  delay(100);
+  servoTest(myservo2, S2_START);
+  delay(100);
+  servoTest(myservo3, S3_START);
+  delay(100);
+  servoTest(myservo4, S4_START);
+  delay(100);
+  servoTest(myservo5, S5_START);
+  delay(100);
+  servoTest(myservo6, S6_START);
   delay(500);
 }
 
@@ -54,6 +65,7 @@ void servoInit() {
 
 void servoTest(VarSpeedServo s, int angle) {
   s.write(angle, SPEED, IS_WAIT);
+  delay(100);
 }
 
 void setup() {
@@ -61,13 +73,17 @@ void setup() {
   Serial.begin(9600);
   servoInit();
   toStart();
+  // вес в правую сторону
+  servoTest(myservo3, S3_START + 15);
   // правая нога вперед
-  servoTest(myservo2, 110);
-  servoTest(myservo1, 85);
+  servoTest(myservo2, S2_START + 20);
+  servoTest(myservo1, S1_START - 20);
   // левая нога назад
-  servoTest(myservo5, 110);
-  servoTest(myservo6, 85);
-  delay(500);
+  servoTest(myservo5, S5_START + 20);
+  servoTest(myservo6, S6_START - 20);
+  
+  // на исходную
+  delay(1000);
   toStart();
 }
 
