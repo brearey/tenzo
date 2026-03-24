@@ -9,7 +9,7 @@ VarSpeedServo myservo5;
 VarSpeedServo myservo6;
 
 // Настройки
-#define SPEED 50      // 0=full speed, 1-255 slower to faster
+#define SPEED 40      // 0=full speed, 1-255 slower to faster
 #define IS_WAIT false // false = асинхронно (не блокирует код), true = ждать окончания движения
 
 // Пины сервоприводов согласно wrestling-robot.ino
@@ -21,10 +21,10 @@ VarSpeedServo myservo6;
 #define SERVO_6 9
 
 #define S1_START 86
-#define S2_START 85
+#define S2_START 98
 #define S3_START 93
 #define S4_START 93
-#define S5_START 100
+#define S5_START 80
 #define S6_START 100
 
 // Диапазоны импульсов (мкс) согласно вашему предыдущему коду
@@ -40,15 +40,10 @@ void print(String msg) {
 void toStart() {
   // обе ноги на исходную
   servoTest(myservo1, S1_START);
-  delay(100);
   servoTest(myservo2, S2_START);
-  delay(100);
   servoTest(myservo3, S3_START);
-  delay(100);
   servoTest(myservo4, S4_START);
-  delay(100);
   servoTest(myservo5, S5_START);
-  delay(100);
   servoTest(myservo6, S6_START);
   delay(500);
 }
@@ -65,7 +60,6 @@ void servoInit() {
 
 void servoTest(VarSpeedServo s, int angle) {
   s.write(angle, SPEED, IS_WAIT);
-  delay(100);
 }
 
 void setup() {
@@ -73,20 +67,29 @@ void setup() {
   Serial.begin(9600);
   servoInit();
   toStart();
-  // вес в правую сторону
-  servoTest(myservo3, S3_START + 15);
-  // правая нога вперед
-  servoTest(myservo2, S2_START + 20);
-  servoTest(myservo1, S1_START - 20);
-  // левая нога назад
-  servoTest(myservo5, S5_START + 20);
-  servoTest(myservo6, S6_START - 20);
-  
-  // на исходную
-  delay(1000);
-  toStart();
 }
 
 void loop() {
+  int shift = 25;
+  // правая нога вперед
+  servoTest(myservo2, S2_START + shift);
+  servoTest(myservo1, S1_START - shift);
+  // левая нога назад
+  servoTest(myservo5, S5_START + shift);
+  servoTest(myservo6, S6_START - shift);
   
+  // на исходную
+  delay(500);
+  toStart();
+
+  // правая нога назад
+  servoTest(myservo2, S2_START - shift);
+  servoTest(myservo1, S1_START + shift);
+  // левая нога впереж
+  servoTest(myservo5, S5_START - shift);
+  servoTest(myservo6, S6_START + shift);
+
+  // на исходную
+  delay(500);
+  toStart();
 }
