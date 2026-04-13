@@ -50,3 +50,7 @@ VIN | VCC
 > default min is 544, max is 2400
 
 [https://github.com/netlabtoolkit/VarSpeedServo](https://github.com/netlabtoolkit/VarSpeedServo)
+
+## Презентация 1 июня
+
+Проект wrestling: должны быть два робота с дист управлением через android + гироскоп. ДО 1 июня
