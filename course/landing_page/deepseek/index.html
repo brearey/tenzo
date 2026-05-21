@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>РобоХапсагай | Робототехника через национальные традиции</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Подключение Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <!-- Блок 1: Главный экран (Hero Section) -->
+    <header class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">«РобоХапсагай»:<br>Откройте мир робототехники через национальные традиции</h1>
+                <p class="hero-subtitle">Образовательный курс и конструктор по созданию и программированию боевых роботов для школьников 13-17 лет.</p>
+                <ul class="hero-benefits">
+                    <li><i class="fas fa-check-circle"></i> Практико-ориентированное обучение: от 3D-модели до готового робота</li>
+                    <li><i class="fas fa-check-circle"></i> Готовое решение "под ключ" для школ и кружков</li>
+                    <li><i class="fas fa-check-circle"></i> Развитие инженерных навыков и IT-компетенций</li>
+                    <li><i class="fas fa-check-circle"></i> Поддержка национальной культуры в технологическом творчестве</li>
+                </ul>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" id="getCPBtn">Получить коммерческое предложение</button>
+                    <button class="btn btn-secondary" id="learnMoreBtn">Узнать больше о проекте</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="img/generated_images/Two friendly, blocky, humanoid robots wrestling.png" alt="Борющиеся роботы" loading="lazy">
+            </div>
+        </div>
+    </header>
+
+    <!-- Блок 2: О проекте (Для грантовой комиссии) -->
+    <section class="about-project">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-text">
+                    <h2>Инновации в образовании на стыке технологий и культуры</h2>
+                    <p>«РобоХапсагай» — это не просто курс по робототехнике. Это уникальный проект, который объединяет современные инженерные дисциплины (программирование, 3D-моделирование, схемотехника) с богатым культурным наследием народа Саха, используя образ национальной борьбы Хапсагай. Наша цель — вовлечь подростков в техническое творчество, повысить их интерес к STEM и одновременно укрепить связь с национальными традициями.</p>
+                </div>
+                <div class="about-image">
+                    <img src="img/generated_images/A friendly, cartoonish, blocky humanoid.png" alt="Робот-маскот" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Блок 3: Что такое «РобоХапсагай»? (Для клиентов) -->
+    <section class="what-is">
+        <div class="container">
+            <h2>Готовое решение для запуска кружка робототехники</h2>
+            <p class="section-subtitle">Мы предлагаем комплексный образовательный продукт, который включает в себя всё необходимое для занятий.</p>
+            <div class="tabs">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="tab1">Образовательный набор</button>
+                    <button class="tab-button" data-tab="tab2">Учебная программа</button>
+                    <button class="tab-button" data-tab="tab3">Методические материалы</button>
+                </div>
+                <div class="tab-content active" id="tab1">
+                    <div class="tab-flex">
+                        <img src="img/generated_images/A flat lay of a robotics kit neatly arranged.png" alt="Набор робототехники" loading="lazy">
+                        <ul>
+                            <li>Arduino Nano</li>
+                            <li>Сервоприводы</li>
+                            <li>Датчики (ультразвук, ИК)</li>
+                            <li>3D-печатные детали</li>
+                            <li>Полный комплект электроники</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab2">
+                    <p><strong>44 академических часа</strong> в очно-дистанционном формате. Модули курса:</p>
+                    <ul>
+                        <li>Программирование C++ для микроконтроллеров</li>
+                        <li>3D-моделирование в КОМПАС-3D</li>
+                        <li>Схемотехника и физика</li>
+                        <li>Сборка и программирование боевого робота</li>
+                    </ul>
+                </div>
+                <div class="tab-content" id="tab3">
+                    <p>В комплект для педагога входят:</p>
+                    <ul>
+                        <li>Поурочные планы</li>
+                        <li>Рабочие тетради</li>
+                        <li>Инструкции по сборке</li>
+                        <li>Оценочные материалы</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Блок 4: Для кого этот курс? -->
+    <section class="for-whom">
+        <div class="container">
+            <h2>Кому подойдет наш образовательный комплект?</h2>
+            <div class="cards-grid">
+                <div class="card"><i class="fas fa-school"></i><h3>Школы и Лицеи</h3><p>Для уроков технологии и информатики</p></div>
+                <div class="card"><i class="fas fa-chalkboard"></i><h3>Точка Роста / Кванториумы</h3><p>Готовый модуль для углубленного изучения</p></div>
+                <div class="card"><i class="fas fa-palette"></i><h3>Учреждения доп. образования</h3><p>Быстрый запуск современного кружка</p></div>
+                <div class="card"><i class="fas fa-city"></i><h3>Муниципалитеты</h3><p>Тиражирование успешного проекта в регионе</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Блок 5: Как проходит обучение? -->
+    <section class="roadmap">
+        <div class="container">
+            <h2>От идеи до состязания: путь инженера</h2>
+            <div class="steps">
+                <div class="step">
+                    <img src="img/generated_images/A teenager is focused on a computer screen.png" alt="Теория" loading="lazy">
+                    <h3>1. Дистанционная теория</h3>
+                    <p>Основы программирования и 3D-моделирования</p>
+                </div>
+                <div class="step">
+                    <img src="img/generated_images/A close-up shot of teenagers' hands assembling a blocky yellow robot.png" alt="Практика" loading="lazy">
+                    <h3>2. Очная практика</h3>
+                    <p>Сборка схем и робота</p>
+                </div>
+                <div class="step">
+                    <img src="img/generated_images/Over-the-shoulder shot of a student writing code on a laptop.png" alt="Программирование" loading="lazy">
+                    <h3>3. Программирование и отладка</h3>
+                    <p>Оживляем робота</p>
+                </div>
+                <div class="step">
+                    <img src="img/generated_images/A dynamic action shot.png" alt="Соревнования" loading="lazy">
+                    <h3>4. Финальные соревнования</h3>
+                    <p>Турнир по робо-хапсагаю</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Блок 6: Пакеты и стоимость -->
+    <section class="packages">
+        <div class="container">
+            <h2>Выберите свой формат внедрения</h2>
+            <div class="package-table">
+                <div class="package">
+                    <h3>Базовый</h3>
+                    <p class="price">от 35 000 ₽</p>
+                    <p>Только материалы</p>
+                </div>
+                <div class="package">
+                    <h3>Стандарт</h3>
+                    <p class="price">от 55 000 ₽</p>
+                    <p>Материалы + консультации</p>
+                </div>
+                <div class="package">
+                    <h3>Расширенный</h3>
+                    <p class="price">от 85 000 ₽</p>
+                    <p>+ обучение педагогов</p>
+                </div>
+                <div class="package">
+                    <h3>Комплексный</h3>
+                    <p class="price">Индивидуально</p>
+                    <p>Внедрение "под ключ"</p>
+                </div>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary" id="calculateBtn">Рассчитать стоимость индивидуально</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Блок 7: Социальная и образовательная значимость -->
+    <section class="social-value">
+        <div class="container">
+            <h2>Наш вклад в будущее региона</h2>
+            <div class="value-grid">
+                <div><i class="fas fa-microchip"></i><h3>Развитие кадрового потенциала</h3><p>Готовим будущих инженеров и программистов</p></div>
+                <div><i class="fas fa-flask"></i><h3>Популяризация STEM</h3><p>Геймификация и соревнования</p></div>
+                <div><i class="fas fa-dove"></i><h3>Сохранение культурной идентичности</h3><p>Интеграция традиций в технологии</p></div>
+                <div><i class="fas fa-chart-line"></i><h3>Масштабируемость</h3><p>Легко тиражируется в регионе и стране</p></div>
+            </div>
+            <div class="value-image">
+                <img src="img/generated_images/Yakut teenagers.png" alt="Школьники Якутии" loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <!-- Блок 8: Команда проекта -->
+    <section class="team">
+        <div class="container">
+            <h2>Наши авторы и разработчики</h2>
+            <div class="team-cards">
+                <div class="team-card">
+                    <img src="img/teachers/Ирина Ивановна схемотехника.jpeg" alt="Ирина Охлопкова" loading="lazy">
+                    <h3>Ирина Охлопкова</h3>
+                    <p>Автор и руководитель проекта, эксперт по схемотехнике</p>
+                </div>
+                <div class="team-card">
+                    <img src="img/teachers/Евгений Семенович программирование.jpg" alt="Евгений Абрамов" loading="lazy">
+                    <h3>Евгений Абрамов</h3>
+                    <p>Соавтор модуля по программированию микроконтроллеров</p>
+                </div>
+                <div class="team-card">
+                    <img src="img/teachers/Сергей Александрович 3Д моделирование.jpg" alt="Сергей Филиппов" loading="lazy">
+                    <h3>Сергей Филиппов</h3>
+                    <p>Соавтор модуля по 3D-моделированию</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Блок 9: Форма заявки -->
+    <section class="form-section" id="form-section">
+        <div class="container">
+            <h2>Оставьте заявку, чтобы получить доступ к курсу и коммерческое предложение</h2>
+            <form id="requestForm">
+                <input type="text" id="name" placeholder="Ваше имя *" required>
+                <input type="text" id="institution" placeholder="Учреждение / Школа *" required>
+                <input type="email" id="email" placeholder="Email *" required>
+                <input type="tel" id="phone" placeholder="Телефон">
+                <select id="packageInterest">
+                    <option value="">Интересующий пакет</option>
+                    <option>Базовый</option>
+                    <option>Стандарт</option>
+                    <option>Расширенный</option>
+                    <option>Комплексный</option>
+                </select>
+                <textarea id="message" placeholder="Ваш вопрос или комментарий"></textarea>
+                <button type="submit" class="btn btn-primary">Отправить заявку</button>
+            </form>
+            <p class="form-note">После отправки заявки мы свяжемся с вами, предоставим коммерческое предложение и откроем доступ к материалам курса на платформе coreapp.ai по указанной вами электронной почте.</p>
+        </div>
+    </section>
+
+    <!-- Блок 10: Техническая реализация сайта -->
+    <section class="tech">
+        <div class="container">
+            <h2>О реализации Landing Page</h2>
+            <p>Этот сайт разработан с использованием современного и надежного технологического стека, обеспечивающего быструю загрузку, интерактивность и безупречный пользовательский опыт на любых устройствах.</p>
+            <div class="tech-stack">
+                <span><i class="fab fa-html5"></i> HTML5</span>
+                <span><i class="fab fa-css3-alt"></i> CSS3</span>
+                <span><i class="fab fa-js"></i> JavaScript (ES6+)</span>
+                <span><i class="fas fa-mobile-alt"></i> Адаптивный дизайн</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Блок 11: Подвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-contact">
+                    <h3>Контакты</h3>
+                    <p>ООО «Три Долины»</p>
+                    <p>Телефон: <a href="tel:89618695247">89618695247</a></p>
+                    <p>Email: <a href="mailto:irina-ohlopkova.1988@yandex.ru">irina-ohlopkova.1988@yandex.ru</a></p>
+                </div>
+                <div class="footer-legal">
+                    <h3>Юридическая информация</h3>
+                    <p>г. Якутск, ул. Лермонтова, д. 15</p>
+                    <p>ИНН/ОГРН: по запросу</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© РобоХапсагай, 2026</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-vk"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

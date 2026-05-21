@@ -26,3 +26,44 @@
 2. скопируй в папку site/video все видео из materials/videos
 3. прочитай файл landing.md
 4. сделай landing page по структуре landing.md
+
+## Claude AI
+
+lorriant@genesys:~/Arduino/course/landing_page/site$ ls -l
+итого 8
+drwxrwxr-x 4 lorriant lorriant 4096 мая 21 14:47 img
+-rw-rw-r-- 1 lorriant lorriant    0 мая 21 14:52 index.html
+-rw-rw-r-- 1 lorriant lorriant    0 мая 21 14:52 script.js
+-rw-rw-r-- 1 lorriant lorriant    0 мая 21 14:53 style.css
+drwxrwxr-x 2 lorriant lorriant 4096 мая 21 14:47 video
+
+lorriant@genesys:~/Arduino/course/landing_page/site$ ls -l img/
+итого 8
+drwxrwxr-x 2 lorriant lorriant 4096 мая 21 14:47 generated_images
+drwxrwxr-x 2 lorriant lorriant 4096 мая 21 14:47 teachers
+
+lorriant@genesys:~/Arduino/course/landing_page/site$ ls -l img/generated_images/
+итого 12880
+-rw-rw-r-- 1 lorriant lorriant 2103415 мая 21 14:47 "A close-up shot of teenagers' hands assembling a blocky yellow robot.png"
+-rw-rw-r-- 1 lorriant lorriant  278695 мая 21 14:47 'A dynamic action shot.png'
+-rw-rw-r-- 1 lorriant lorriant 2050198 мая 21 14:47 'A flat lay of a robotics kit neatly arranged.png'
+-rw-rw-r-- 1 lorriant lorriant  185577 мая 21 14:47 'A friendly, cartoonish, blocky humanoid.png'
+-rw-rw-r-- 1 lorriant lorriant 2083631 мая 21 14:47 'A teenager is focused on a computer screen.png'
+-rw-rw-r-- 1 lorriant lorriant  280236 мая 21 14:47 'humanoid hands up.png'
+-rw-rw-r-- 1 lorriant lorriant 2017562 мая 21 14:47 'Over-the-shoulder shot of a student writing code on a laptop.png'
+-rw-rw-r-- 1 lorriant lorriant 1858476 мая 21 14:47 'Two friendly, blocky, humanoid robots wrestling.png'
+-rw-rw-r-- 1 lorriant lorriant 2312452 мая 21 14:47 'Yakut teenagers.png'
+
+lorriant@genesys:~/Arduino/course/landing_page/site$ ls -l img/teachers/
+итого 1936
+-rwxr-xr-x 1 lorriant lorriant 1144876 мая 21 14:47 'Евгений Семенович программирование.jpg'
+-rwxr-xr-x 1 lorriant lorriant   36427 мая 21 14:47 'Ирина Ивановна схемотехника.jpeg'
+-rwxr-xr-x 1 lorriant lorriant  797523 мая 21 14:47 'Сергей Александрович 3Д моделирование.jpg
+
+lorriant@genesys:~/Arduino/course/landing_page/site$ ls -l video/
+итого 6240
+-rw-rw-r-- 1 lorriant lorriant 4272394 мая 21 14:47 'концепт борьбы роботов хапсагай.mp4'
+-rw-rw-r-- 1 lorriant lorriant 2109981 мая 21 14:47 'концепт робота хапсагай.mp4
+
+1. посмотри эту структуру с сделай landing page по структуре landing.md
+2. мне нужны только содержимое файлов: index.html, style.css, script.js
