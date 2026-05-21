@@ -14,3 +14,7 @@
 
 1. Посмотри папку materials/generated_images. Не смотри папку trash. Обнови landing.md с учетом сгенерированных картинок для landing page.
 2. Добавь в landing.md про стек: HTML, CSS, JS. Про использование CSS анимаций. Про адаптивный экран.
+
+## Add teachers
+
+Исправь Блок 8: Команда проекта в файле landing.md с учетом того что я добавил фотографии учителей в папке images/teachers
