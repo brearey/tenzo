@@ -18,11 +18,11 @@
 
 *   **Цель:** Показать конечный результат обучения — захватывающие соревнования.
 *   **Промпт 2.1 (Борьба):**
-    *   `Two friendly, blocky, humanoid robots wrestling on a circular yellow and red mat. One robot wears a red singlet, the other wears a blue singlet. The style is a clean 3D render, cartoonish, vibrant colors, dramatic lighting, focused on the action.`
+    *   `Two friendly, blocky, humanoid robots with eyes (arduino ultrasonic sensor) wrestling on a circular yellow and red mat. One robot wears a red singlet, the other wears a blue singlet. The style is a clean 3D render, cartoonish, vibrant colors, dramatic lighting, focused on the action.`
     *   *(Перевод: Два дружелюбных, блочных, человекоподобных робота борются на круглом желто-красном ковре. Один робот в красном трико, другой — в синем. Стиль — чистый 3D-рендер, мультяшный, яркие цвета, драматическое освещение, фокус на действии.)*
 *   **Промпт 2.2 (Команда и робот):**
-    *   `A diverse group of excited teenagers (boys and girls, aged 14-17) are celebrating around their wrestling robot after a competition. The robot looks like a friendly, blocky, yellow character. Confetti is in the air. Sense of victory and teamwork. Modern classroom background.`
-    *   *(Перевод: Разнообразная группа восторженных подростков (мальчики и девочки 14-17 лет) празднуют победу вокруг своего робота-борца после соревнований. Робот выглядит как дружелюбный, блочный, желтый персонаж. В воздухе конфетти. Чувство победы и командной работы. Фон — современный класс.)*
+    *   `A diverse group of enthusiastic Yakut teenagers (boys and girls aged 14-17) celebrate their victory around their robot wrestler after the competition. The robot appears as a friendly, blocky, yellow character. Confetti fills the air. A sense of victory and teamwork permeates the atmosphere. The backdrop is a modern Russian classroom.`
+    *   *(Перевод: Разнообразная группа восторженных якутских подростков (мальчики и девочки 14-17 лет) празднуют победу вокруг своего робота-борца после соревнований. Робот выглядит как дружелюбный, блочный, желтый персонаж. В воздухе конфетти. Чувство победы и командной работы. Фон — современный русский класс.)*
 
 ### 3. Процесс обучения и сборки
 
