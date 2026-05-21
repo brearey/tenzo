@@ -18,3 +18,11 @@
 ## Add teachers
 
 Исправь Блок 8: Команда проекта в файле landing.md с учетом того что я добавил фотографии учителей в папке images/teachers
+
+## Start dev LP
+
+1. в папке site создай все необходимые html, css, js файлы
+2. скопируй в папку site/img все изображения из materials/images
+2. скопируй в папку site/video все видео из materials/videos
+3. прочитай файл landing.md
+4. сделай landing page по структуре landing.md
