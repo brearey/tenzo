@@ -44,6 +44,22 @@ VarSpeedServo myservo11;  // левая стопа
 #define TOWER_MIN 500
 #define TOWER_MAX 2500
 
+#define HC_TRIG 3
+#define HC_ECHO 2
+
+float getDist(uint8_t trig, uint8_t echo) {
+  // импульс 10 мкс
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+
+  // измеряем время ответного импульса
+  uint32_t us = pulseIn(echo, HIGH);
+
+  // считаем расстояние и возвращаем
+  return us / 58.2;
+}
+
 void print(String msg) {
   Serial.println(msg);
 }
@@ -87,6 +103,8 @@ void toStartAll() {
 }
 
 void setup() {
+  pinMode(HC_TRIG, OUTPUT); // trig выход
+  pinMode(HC_ECHO, INPUT);  // echo вход
 
   Serial.begin(9600);
   print("Program start");
@@ -187,5 +205,25 @@ void setup() {
 }
 
 void loop() {
-
+  float dist = getDist(HC_TRIG, HC_ECHO);   // получаем расстояние
+  Serial.println(dist);
+  if (dist < 20) {
+    // What?
+    moveHand(myservo8, 0);
+  
+    delay(1000);
+  
+    for (int i = 0; i < 2; i++) {
+  
+      moveHand(myservo8, 10);
+      delay(100);
+  
+      moveHand(myservo8, 0);
+      delay(100);
+    }
+  
+    delay(1000);
+  
+    moveHand(myservo8, S8_START);
+  }
 }
