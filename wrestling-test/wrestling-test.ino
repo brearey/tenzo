@@ -1,12 +1,15 @@
 #include <VarSpeedServo.h>
 
 // Создаем объекты сервоприводов
-VarSpeedServo myservo1;
-VarSpeedServo myservo2;
-VarSpeedServo myservo3;
-VarSpeedServo myservo4;
-VarSpeedServo myservo5;
-VarSpeedServo myservo6;
+VarSpeedServo myservo4; // правая стопа
+VarSpeedServo myservo5; // правое колено
+VarSpeedServo myservo6; // правое бедро
+VarSpeedServo myservo7; // правая рука
+
+VarSpeedServo myservo8; // левая рука
+VarSpeedServo myservo9; // левое бедро
+VarSpeedServo myservo10; // левое колено
+VarSpeedServo myservo11; // левая стопа
 
 // Настройки
 #define LEG_SPEED 30      // 0=full speed, 1-255 slower to faster
@@ -14,19 +17,23 @@ VarSpeedServo myservo6;
 #define IS_WAIT false // false = асинхронно (не блокирует код), true = ждать окончания движения
 
 // Пины сервоприводов согласно wrestling-robot.ino
-#define SERVO_1 4
-#define SERVO_2 5
-#define SERVO_3 6
-#define SERVO_4 7
-#define SERVO_5 8
-#define SERVO_6 9
+#define SERVO_4 4
+#define SERVO_5 5
+#define SERVO_6 6
+#define SERVO_7 7
+#define SERVO_8 8
+#define SERVO_9 9
+#define SERVO_10 10
+#define SERVO_11 11
 
-#define S1_START 86
-#define S2_START 98
-#define S3_START 93
-#define S4_START 93
-#define S5_START 80
-#define S6_START 100
+#define S4_START 90
+#define S5_START 90
+#define S6_START 90
+#define S7_START 90
+#define S8_START 90
+#define S9_START 90
+#define S10_START 90
+#define S11_START 90
 
 // Диапазоны импульсов (мкс) согласно вашему предыдущему коду
 #define FEETCH_MIN 544
@@ -40,12 +47,14 @@ void print(String msg) {
 
 void toStartAll() {
   // обе ноги на исходную
-  moveLeg(myservo1, S1_START);
-  moveLeg(myservo2, S2_START);
-  moveLeg(myservo3, S3_START);
   moveLeg(myservo4, S4_START);
   moveLeg(myservo5, S5_START);
   moveLeg(myservo6, S6_START);
+  moveLeg(myservo7, S7_START);
+  moveLeg(myservo8, S8_START);
+  moveLeg(myservo9, S9_START);
+  moveLeg(myservo10, S10_START);
+  moveLeg(myservo11, S11_START);
   delay(500);
 }
 
